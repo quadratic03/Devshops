@@ -1,0 +1,110 @@
+/* Admin Dashboard CSS */
+
+body {
+    font-size: .875rem;
+}
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 20px 0 0;
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.8) !important;
+    padding: .75rem 1rem;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar .nav-link.active {
+    color: #fff !important;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    border-left: 4px solid #0d6efd;
+}
+
+.sidebar .nav-link.text-danger {
+    color: #dc3545 !important;
+}
+
+.sidebar .nav-link.text-danger:hover {
+    color: #ff5c6c !important;
+}
+
+.sidebar-heading {
+    font-size: .75rem;
+    text-transform: uppercase;
+}
+
+.dashboard-card {
+    transition: transform 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+}
+
+.btn-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.table-responsive {
+    margin-bottom: 20px;
+}
+
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+        height: auto;
+        padding-bottom: 20px;
+    }
+}
+
+/* Report Specific Styles */
+@media print {
+    .sidebar, .nav, .btn-toolbar, .no-print {
+        display: none !important;
+    }
+    
+    .card {
+        border: none !important;
+        box-shadow: none !important;
+    }
+    
+    .table {
+        width: 100% !important;
+    }
+}
+
+/* Upload Form Styles */
+.upload-form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.preview-container {
+    height: 200px;
+    width: 100%;
+    border: 1px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+}
+
+.preview-image {
+    max-height: 180px;
+    max-width: 100%;
+} 

@@ -1,0 +1,115 @@
+<?php
+// Only start the session if one doesn't already exist
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once 'includes/functions.php';
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevMarket Philippines</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <header class="bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark container">
+            <div class="container-fluid">
+                <a class="navbar-brand fw-bold" href="index.php">
+                    <span class="text-primary">web</span>DevMarket
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mx-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="index.php">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="products.php">Products</a>
+                        </li>
+                        <?php if (is_admin()): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="admin/dashboard.php">Dashboard</a>
+                        </li>
+                        <?php elseif (is_seller()): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="seller/dashboard.php">Seller Dashboard</a>
+                        </li>
+                        <?php endif; ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="about.php">About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="contact.php">Contact</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <?php if (is_logged_in()): ?>
+                            <div class="dropdown">
+                                <button class="btn btn-primary dropdown-toggle" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <?php echo $_SESSION['username']; ?>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+                                    <?php if (is_admin()): ?>
+                                    <li><a class="dropdown-item" href="admin/dashboard.php">Dashboard</a></li>
+                                    <?php elseif (is_seller()): ?>
+                                    <li><a class="dropdown-item" href="seller/dashboard.php">Seller Dashboard</a></li>
+                                    <?php endif; ?>
+                                    <?php if (isset($_SESSION['role']) && $_SESSION['role'] == 'buyer'): ?>
+                                    <li><a class="dropdown-item" href="my_requests.php">My Source Requests</a></li>
+                                    <?php endif; ?>
+                                    <?php
+                                    // Check for unread messages
+                                    $unread_count = 0;
+                                    if (isset($conn)) {
+                                        $unread_query = "SELECT COUNT(*) as count FROM messages WHERE receiver_id = ? AND is_read = FALSE";
+                                        $stmt = $conn->prepare($unread_query);
+                                        if ($stmt) {
+                                            $user_id = $_SESSION['user_id'];
+                                            $stmt->bind_param("i", $user_id);
+                                            $stmt->execute();
+                                            $result = $stmt->get_result();
+                                            if ($row = $result->fetch_assoc()) {
+                                                $unread_count = $row['count'];
+                                            }
+                                        }
+                                    }
+                                    ?>
+                                    <li>
+                                        <a class="dropdown-item d-flex justify-content-between align-items-center" href="my_messages.php">
+                                            My Messages
+                                            <?php if ($unread_count > 0): ?>
+                                            <span class="badge rounded-pill bg-danger"><?php echo $unread_count; ?></span>
+                                            <?php endif; ?>
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                                </ul>
+                            </div>
+                        <?php else: ?>
+                            <a href="login.php" class="btn btn-primary">Login</a>
+                            <a href="register.php" class="btn btn-outline-light ms-2">Register</a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </nav>
+        <div class="container py-2">
+            <form action="search.php" method="GET" class="d-flex">
+                <input class="form-control me-2" type="search" name="q" placeholder="Search for digital products..." aria-label="Search">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </form>
+        </div>
+    </header>
+    <main class="container my-4"> 

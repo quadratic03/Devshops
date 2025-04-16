@@ -1,0 +1,96 @@
+# DevMarket Philippines .htaccess configuration
+# Enable rewriting
+RewriteEngine On
+
+# Set the base directory
+RewriteBase /
+
+# If the requested filename is not a directory, file, or symlink, redirect to 404
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-l
+RewriteRule ^(.*)$ 404.php [L]
+
+# Custom error pages
+ErrorDocument 400 /404.php
+ErrorDocument 401 /404.php
+ErrorDocument 403 /404.php
+ErrorDocument 404 /404.php
+ErrorDocument 500 /404.php
+
+# Prevent directory listing
+Options -Indexes
+
+# Prevent access to .htaccess
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Prevent access to the config and database files
+<FilesMatch "^(connect\.php|config/database\.php)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protect against XSS attacks
+<IfModule mod_headers.c>
+    Header set X-XSS-Protection "1; mode=block"
+    Header always append X-Frame-Options SAMEORIGIN
+    Header set X-Content-Type-Options "nosniff"
+</IfModule>
+
+# Enable GZIP compression for faster loading
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/x-javascript application/json
+</IfModule>
+
+# Set default character set
+AddDefaultCharset UTF-8
+
+# Set server timezone to Asia/Manila
+SetEnv TZ Asia/Manila
+
+# Security Headers
+<IfModule mod_headers.c>
+    # Protect against XSS attacks
+    Header set X-XSS-Protection "1; mode=block"
+    
+    # Prevent MIME-type sniffing
+    Header set X-Content-Type-Options "nosniff"
+    
+    # Prevent clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    
+    # Set strict transport security (HSTS) for HTTPS
+    # Header set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    
+    # Enable Cross-Origin Resource Sharing (CORS)
+    Header set Access-Control-Allow-Origin "*"
+</IfModule>
+
+# Disable directory listing
+Options -Indexes
+
+# Block access to sensitive files
+<FilesMatch "^\.ht|^\.(git|svn)|\.env$|composer\.(json|lock)$|package(-lock)?\.json$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Prevent direct access to PHP files in certain directories
+RewriteRule ^(includes|config|database)/.*\.php$ - [F,L]
+
+# Security: Limit HTTP methods
+<LimitExcept GET POST HEAD>
+    Order allow,deny
+    Deny from all
+</LimitExcept>
+
+# URL Rewrites for clean URLs
+# Uncomment if you need clean URLs like /products/category/1 instead of products.php?category=1
+
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^products/category/([0-9]+)$ products.php?category=$1 [L,QSA]
+# RewriteRule ^product/([0-9]+)$ product.php?id=$1 [L,QSA] 
